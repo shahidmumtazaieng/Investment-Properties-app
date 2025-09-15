@@ -47,9 +47,16 @@ app.use((req, res, next) => {
   next();
 });
 
-// Serve static files
+// Serve static files with proper configuration
 const publicDir = path.join(__dirname, 'dist', 'public');
-app.use(express.static(publicDir));
+app.use(express.static(publicDir, {
+  // Ensure index.html is served for directory requests
+  index: 'index.html',
+  // Set proper cache headers
+  maxAge: '1d',
+  // Handle 404s for missing files
+  redirect: false
+}));
 
 // API Routes
 app.get('/api/health', (req, res) => {
@@ -97,26 +104,41 @@ app.get('/api/admin/me', (req, res) => {
   res.status(401).json({ message: 'Unauthorized' });
 });
 
-// Specific routes for React app
+// Specific routes for React app (must be before catch-all)
 app.get('/control-panel/login', (req, res) => {
+  console.log('Serving control-panel/login');
   res.sendFile(path.join(publicDir, 'index.html'));
 });
 
 app.get('/control-panel/*', (req, res) => {
+  console.log('Serving control-panel/*');
   res.sendFile(path.join(publicDir, 'index.html'));
 });
 
 // Other specific pages
 app.get('/blog', (req, res) => {
+  console.log('Serving /blog');
   res.sendFile(path.join(publicDir, 'index.html'));
 });
 
 app.get('/join-buyers', (req, res) => {
+  console.log('Serving /join-buyers');
   res.sendFile(path.join(publicDir, 'index.html'));
 });
 
-// Catch-all route for React Router
+app.get('/properties', (req, res) => {
+  console.log('Serving /properties');
+  res.sendFile(path.join(publicDir, 'index.html'));
+});
+
+app.get('/foreclosures', (req, res) => {
+  console.log('Serving /foreclosures');
+  res.sendFile(path.join(publicDir, 'index.html'));
+});
+
+// Catch-all route for React Router (must be last)
 app.get('*', (req, res) => {
+  console.log('Serving catch-all route for:', req.path);
   res.sendFile(path.join(publicDir, 'index.html'));
 });
 

@@ -11,6 +11,7 @@ export default defineConfig({
     },
   },
   root: __dirname,
+  base: "./", // This ensures relative paths for assets
   build: {
     outDir: "../dist/public",
     emptyOutDir: true,

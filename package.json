@@ -36,8 +36,8 @@
     "db:generate": "drizzle-kit generate:pg",
     "db:migrate": "drizzle-kit migrate",
     "dev": "cd client && npm install && npm run dev",
-    "build": "cd client && npm install && npm run build",
-    "vercel-build": "cd client && npm install && npm run build"
+    "build": "cd client && npm install && npm run build && node ../fix-asset-paths.js",
+    "vercel-build": "cd client && npm install && npm run build && node ../fix-asset-paths.js"
   },
   "dependencies": {
     "@ant-design/icons": "^6.0.2",
