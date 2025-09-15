@@ -2,6 +2,7 @@
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import environment from './config/environment.js';
 
 // Load environment variables
 dotenv.config();
@@ -9,6 +10,12 @@ dotenv.config();
 // Get the directory name for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Determine client URL based on environment
+const CLIENT_URL = environment.getClientUrl();
+console.log('Environment:', environment.getEnvironment());
+console.log('Client URL:', CLIENT_URL);
+console.log('Is Production:', environment.isProduction());
 
 // Import Vercel-specific modules
 import express from 'express';
@@ -22,13 +29,14 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Session middleware
+// Session middleware with environment-specific configuration
+const sessionConfig = environment.getSessionConfig();
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'your-secret-key-here',
+  secret: sessionConfig.secret || 'your-secret-key-here',
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: false,
+    secure: sessionConfig.secure, // Use secure cookies in production
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
 }));
@@ -45,7 +53,12 @@ app.use(express.static(publicDir));
 
 // API Routes
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', timestamp: new Date().toISOString() });
+  res.json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    environment: environment.getEnvironment(),
+    clientUrl: CLIENT_URL
+  });
 });
 
 // Admin API routes
@@ -56,7 +69,8 @@ app.post('/api/admin/login', (req, res) => {
     res.json({
       success: true,
       token: 'admin-secret-token',
-      user: { id: 'admin-1', username: 'admin', role: 'administrator' }
+      user: { id: 'admin-1', username: 'admin', role: 'administrator' },
+      clientUrl: CLIENT_URL
     });
   } else {
     res.status(401).json({ success: false, message: 'Invalid credentials' });
@@ -75,7 +89,8 @@ app.get('/api/admin/me', (req, res) => {
     if (token === 'admin-secret-token') {
       return res.json({
         success: true,
-        user: { id: 'admin-1', username: 'admin', role: 'administrator' }
+        user: { id: 'admin-1', username: 'admin', role: 'administrator' },
+        clientUrl: CLIENT_URL
       });
     }
   }
