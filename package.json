@@ -35,8 +35,8 @@
     "db:push": "drizzle-kit push:pg",
     "db:generate": "drizzle-kit generate:pg",
     "db:migrate": "drizzle-kit migrate",
-    "dev": "cd client && vite",
-    "build": "cd client && vite build",
+    "dev": "cd client && npm install && npm run dev",
+    "build": "cd client && npm install && npm run build",
     "vercel-build": "cd client && npm install && npm run build"
   },
   "dependencies": {
