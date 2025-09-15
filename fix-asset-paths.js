@@ -2,7 +2,32 @@
 import fs from 'fs';
 import path from 'path';
 
-const indexPath = path.join(process.cwd(), 'dist', 'public', 'index.html');
+// Try multiple possible paths for index.html
+const possiblePaths = [
+  path.join(process.cwd(), '..', 'dist', 'public', 'index.html'),  // When in client directory
+  path.join(process.cwd(), 'dist', 'public', 'index.html'),        // When in root directory
+  path.join(process.cwd(), 'index.html')                           // Fallback
+];
+
+function findIndexHtml() {
+  for (const indexPath of possiblePaths) {
+    if (fs.existsSync(indexPath)) {
+      return indexPath;
+    }
+  }
+  return null;
+}
+
+const indexPath = findIndexHtml();
+
+if (!indexPath) {
+  console.error('❌ Could not find index.html in any expected location');
+  console.log('Searched in:');
+  possiblePaths.forEach(p => console.log('  -', p));
+  process.exit(1);
+}
+
+console.log('✅ Found index.html at:', indexPath);
 
 // Read the index.html file
 fs.readFile(indexPath, 'utf8', (err, data) => {
