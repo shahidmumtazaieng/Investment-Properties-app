@@ -1,0 +1,33 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "server-vercel.js",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": [
+          "dist/**",
+          "client/**",
+          "shared/**"
+        ]
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "server-vercel.js"
+    },
+    {
+      "src": "/control-panel/(.*)",
+      "dest": "server-vercel.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "server-vercel.js"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
+}

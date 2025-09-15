@@ -36,7 +36,8 @@
     "db:generate": "drizzle-kit generate:pg",
     "db:migrate": "drizzle-kit migrate",
     "dev": "cd client && vite",
-    "build": "cd client && vite build"
+    "build": "cd client && vite build",
+    "vercel-build": "cd client && npm install && npm run build"
   },
   "dependencies": {
     "@ant-design/icons": "^6.0.2",
